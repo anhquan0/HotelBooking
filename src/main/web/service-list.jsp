@@ -1,6 +1,6 @@
 <%@ page import="model.entity.Room" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.time.LocalDateTime" %>
+<%@ page import="java.time.LocalDate" %>
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -55,9 +55,6 @@
             </div>
          </div>
       </div>
-      <div class="row">
-         <a href=""></a>
-      </div>
       <!-- our_room -->
       <div  class="our_room">
          <div class="container">
@@ -90,16 +87,16 @@
             </div>
             <div class="row">
                <%
-                  LocalDateTime checkInDate = (LocalDateTime) request.getAttribute("checkInDate");
-                  LocalDateTime checkOutDate = (LocalDateTime) request.getAttribute("checkOutDate");
+                  LocalDate checkInDate = (LocalDate) request.getAttribute("checkInDate");
+                  LocalDate checkOutDate = (LocalDate) request.getAttribute("checkOutDate");
                %>
                <div class="col-md-6 col-md-12">
                   <label for="check_in_date">Check In Date: </label>
-                  <input type="datetime-local" id="check_in_date" value="<%= checkInDate != null ? checkInDate : "" %>">
+                  <input type="date" id="check_in_date" value="<%= checkInDate != null ? checkInDate : "" %>">
                </div>
                <div class="col-md-6 col-md-12">
                   <label for="check_out_date">Check Out Date: </label>
-                  <input type="datetime-local" id="check_out_date" value="<%= checkOutDate != null ? checkOutDate : "" %>">
+                  <input type="date" id="check_out_date" value="<%= checkOutDate != null ? checkOutDate : "" %>">
                </div>
             </div>
             <div class="row" id="roomList">
@@ -119,7 +116,7 @@
                         <p class="room_price">$<%=room.getPrice()%>/day</p>
                         <p class="bed_room"><%=room.getDescription()%></p>
                         <% if(room.getStatus().equals("Available")) { %>
-                        <a href="booking.jsp?roomID=<%=room.getRoomId()%>" id="room_<%=room.getRoomId()%>" class="book_btn" onclick="return bookRoom('<%= room.getRoomId() %>')">Book now</a>
+                        <a href="booking.jsp?roomID=<%=room.getRoomId()%>" class="book_btn">Book now</a>
                         <% } %>
                      </div>
                   </div>
@@ -150,7 +147,7 @@
          </div>
       </div>
       <!-- end our_room -->
-     
+
       <!--  footer -->
       <%@include file="footer.jsp" %>
 
@@ -242,48 +239,6 @@
       background-color: red;
    }
 </style>
-<script>
-   var checkInDate = document.getElementById("check_in_date");
-   var checkOutDate = document.getElementById("check_out_date");
-   var errorMessage = document.querySelector("#error-message");
-   var bookButton = document.getElementById("book_button");
-   var bookRoomForm = document.getElementById("book_room_form");
- 
-   function isDateValid(dateStr) {
-     return !isNaN(new Date(dateStr));
-   }
- 
-   function validateDateInHome() {
-     console.log(!isDateValid(checkInDate) || !isDateValid(checkOutDate))
- 
-     var flag = true;
-     if(!isDateValid(checkInDate) || !isDateValid(checkOutDate)) {
-       errorMessage.textContent = "Invalid date"
-       flag = false;
-     } else {
-       console.log(!isDateValid(checkInDate) || !isDateValid(checkOutDate))
-       var selectedCheckInDate = new Date(checkInDate);
-       var selectedCheckOutDate = new Date(checkOutDate);
-       var currentDate = new Date();
-       if(!(selectedCheckInDate > currentDate && selectedCheckOutDate > selectedCheckInDate)) {
-         errorMessage.textContent = "The check-in date and check-out date must be greater than or equal to the current date"
-         flag = false;
-       }
-     }
- 
-     if(!flag) {
-       errorMessage.style.display = "block"; // Hiển thị thông báo nếu ngày nhỏ hơn ngày hiện tại
-       setTimeout(function() {
-         errorMessage.style.display = "none"; // Ẩn thông báo sau 3 giây
-       }, 3000);
-     } else {
-       errorMessage.style.display = "none"
-     }
- 
-     return flag;
-   }
- </script>
- 
 
    <script>
       function filterRooms() {
@@ -310,16 +265,6 @@
          document.getElementById('priceFilter').value = urlParams.get('priceFilter') || 'all';
          document.getElementById('statusFilter').value = urlParams.get('statusFilter') || 'all';
          document.getElementById('typeFilter').value = urlParams.get('typeFilter') || 'all';
-      }
-
-      function bookRoom(str) {
-         var checkInDate = document.getElementById("check_in_date").value;
-         var checkOutDate = document.getElementById("check_out_date").value;
-         var url = document.querySelector("a#room_" + str);
-         var newUrl = url.getAttribute('href') + "&check_in_date=" + checkInDate + "&check_out_date=" + checkOutDate;
-         console.log(newUrl)
-         window.location.href = newUrl;
-         return false;
       }
    </script>
 

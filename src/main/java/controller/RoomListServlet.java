@@ -6,7 +6,7 @@ import jakarta.servlet.annotation.*;
 import model.dao.RoomDAO;
 import model.entity.Room;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import java.io.IOException;
@@ -34,14 +34,15 @@ public class RoomListServlet extends HttpServlet {
 
         request.setAttribute("roomList", roomList);
 
-        if (!checkInDateStr.isEmpty() && !checkOutDateStr.isEmpty()) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        if (checkInDateStr != null && checkOutDateStr != null) {
+            if(!checkInDateStr.isEmpty() && !checkOutDateStr.isEmpty()) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+                LocalDateTime checkInDate = LocalDateTime.parse(checkInDateStr, formatter);
+                LocalDateTime checkOutDate = LocalDateTime.parse(checkOutDateStr, formatter);
 
-            LocalDate checkInDate = LocalDate.parse(checkInDateStr, formatter);
-            LocalDate checkOutDate = LocalDate.parse(checkOutDateStr, formatter);
-
-            request.setAttribute("checkInDate", checkInDate);
-            request.setAttribute("checkOutDate", checkOutDate);
+                request.setAttribute("checkInDate", checkInDate);
+                request.setAttribute("checkOutDate", checkOutDate);
+            }
         }
         request.getRequestDispatcher("room-list.jsp").forward(request, response);
     }

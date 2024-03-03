@@ -16,8 +16,6 @@ public class AppStartupListener implements ServletContextListener {
 
     private PasswordUtil passwordUtil;
 
-
-
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         accountDAO = new AccountDAO();

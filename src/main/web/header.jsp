@@ -29,26 +29,6 @@
   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
   <script src="js/custom.js"></script>
-  <script>
-        var checkInDate = document.getElementById("check_in_date");
-        var errorMessage = document.getElementById("error-message");
-        var bookButton = document.getElementById("book_button")
-
-        bookButton.addEventListener("click", function(e) {
-          var selectedDate = new Date(checkInDate.value);
-          var currentDate = new Date();
-
-          if (selectedDate < currentDate) {
-            errorMessage.textContent = "Date invalid";
-            errorMessage.style.display = "block"; // Hiển thị thông báo nếu ngày nhỏ hơn ngày hiện tại
-            setTimeout(function() {
-              errorMessage.style.display = "none"; // Ẩn thông báo sau 3 giây
-            }, 3000);
-          } else {
-            errorMessage.style.display = "none"; // Ẩn thông báo nếu ngày hợp lệ
-          }
-        });
-  </script>
 </head>
 <!-- body -->
 <body class="main-layout">
@@ -117,6 +97,7 @@
     </div>
   </div>
 </header>
-<div id="error-message"></div>
 </body>
+
 </html>
+

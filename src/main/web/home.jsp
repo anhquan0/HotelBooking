@@ -38,6 +38,7 @@
       <!-- end loader -->
       <!-- header -->
       <%@include file="header.jsp" %>
+      <div id="error-message"></div>
 
       <!-- end header inner -->
       <!-- end header -->
@@ -77,7 +78,7 @@
                   <div class="col-md-5">
                      <div class="book_room">
                         <h1>Book a Room Online</h1>
-                        <form class="book_now" action="room-list">
+                        <form class="book_now" id="book_room_form" action="room-list" onsubmit="return validateDateInHome()">
                            <div class="row">
                               <div class="col-md-12">
                                  <span for="check_in_date">Check In Date</span>
@@ -87,10 +88,10 @@
                               <div class="col-md-12">
                                  <span for="check_out_date">Check Out Date</span>
                                  <img class="date_cua" src="images/date.png">
-                                 <input class="online_book" placeholder="dd/mm/yyyy" type="date" name="check_out_date">
+                                 <input class="online_book" placeholder="dd/mm/yyyy" type="date" id="check_out_date" name="check_out_date">
                               </div>
                               <div class="col-md-12">
-                                 <button id="book_button" class="book_btn">Book Now</button>
+                                 <button id="book_button" class="book_btn" onclick="return validateDateInHome()">Book Now</button>
                               </div>
                            </div>
                         </form>
@@ -283,7 +284,7 @@
                            <input class="contactus" placeholder="Phone Number" type="type" name="Phone Number">                          
                         </div>
                         <div class="col-md-12">
-                           <textarea class="textarea" placeholder="Message" type="type" Message="Name">Message</textarea>
+                           <textarea class="textarea" placeholder="Message" type="type" Message="Name"></textarea>
                         </div>
                         <div class="col-md-12">
                            <button class="send_btn">Send</button>
@@ -294,7 +295,7 @@
                <div class="col-md-6">
                   <div class="map_main">
                      <div class="map-responsive">
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d238375.32700540926!2d105.49960783602522!3d21.008085219113855!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abc60e7d3f19%3A0x2be9d7d0b5abcbf4!2sFPT%20University!5e0!3m2!1sen!2s!4v1709307892023!5m2!1sen!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>                     </div>
+                     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d238375.32700540926!2d105.49960783602522!3d21.008085219113855!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abc60e7d3f19%3A0x2be9d7d0b5abcbf4!2sFPT%20University!5e0!3m2!1sen!2s!4v1709307892023!5m2!1sen!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>                     </div>
                   </div>
                </div>
             </div>
@@ -311,5 +312,45 @@
       <!-- sidebar -->
       <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
       <script src="js/custom.js"></script>
+      <script>
+         var checkInDate = document.getElementById("check_in_date");
+         var checkOutDate = document.getElementById("check_out_date");
+         var errorMessage = document.querySelector("#error-message");
+         var bookButton = document.getElementById("book_button");
+         var bookRoomForm = document.getElementById("book_room_form");
+       
+         function isDateValid(dateStr) {
+           return !isNaN(new Date(dateStr));
+         }
+       
+         function validateDateInHome() {       
+           var flag = true;
+           if(!(isDateValid(checkInDate.value) && isDateValid(checkOutDate.value))) {
+             errorMessage.textContent = "Invalid date"
+             flag = false;
+           } else {
+             console.log(!(isDateValid(checkInDate.value) && isDateValid(checkOutDate.value)))
+             var selectedCheckInDate = new Date(checkInDate.value);
+             var selectedCheckOutDate = new Date(checkOutDate.value);
+             var currentDate = new Date();
+             if(!(selectedCheckInDate >= currentDate && selectedCheckOutDate > selectedCheckInDate)) {
+               errorMessage.textContent = "The check-in date must be greater than or equal to the current date, check-out date must be greater than check-in date"
+               flag = false;
+             }
+           }
+       
+           if(!flag) {
+             errorMessage.style.display = "block"; // Hiển thị thông báo nếu ngày nhỏ hơn ngày hiện tại
+             setTimeout(function() {
+               errorMessage.style.display = "none"; // Ẩn thông báo sau 3 giây
+             }, 3000);
+           } else {
+             errorMessage.style.display = "none"
+           }
+       
+           return flag;
+         }
+      </script>
+       
    </body>
 </html>

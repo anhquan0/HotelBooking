@@ -384,10 +384,6 @@
                                             <% if (request.getAttribute("message2") != null) { %>
                                                 <p style="color: red;"><%= request.getAttribute("message2") %></p>
                                             <% } %>
-                                            <div class="form-group">
-                                                <input type="text" name="Name" class="form-style" placeholder="Name" id="name" autocomplete="off">
-                                                <i class="input-icon uil uil-user"></i>
-                                            </div>
                                              <div class="form-group">
                                                 <input type="text" name="username" class="form-style" placeholder="Username" id="logname" autocomplete="off">
                                                 <i class="input-icon uil uil-user"></i>
@@ -398,10 +394,6 @@
                                             </div>
                                             <div class="form-group mt-2">
                                                 <input type="password" name="rePassword" class="form-style" placeholder="Confirm Password" autocomplete="off">
-                                                <i class="input-icon uil uil-at"></i>
-                                            </div>
-                                            <div class="form-group mt-2">
-                                                <input type="phone_number" name="phone_number" class="form-style" placeholder="Your phone" autocomplete="off">
                                                 <i class="input-icon uil uil-at"></i>
                                             </div>
                                             <div class="form-group mt-2">

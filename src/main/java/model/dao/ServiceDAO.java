@@ -59,6 +59,8 @@ public class ServiceDAO {
         return services;
     }
 
+
+
     public Service getServiceByID(Integer serviceID) {
         Service service = null;
 
@@ -70,7 +72,8 @@ public class ServiceDAO {
                 ResultSet resultSet = preparedStatement.executeQuery();
 
                 while(resultSet.next()) {
-                    service.setServiceId(resultSet.getInt("ServiceID"));
+                    service = new Service();
+                    service.setServiceId(serviceID);
                     service.setName(resultSet.getString("Name"));
                     service.setPrice(resultSet.getDouble("Price"));
                     service.setCreatedDate(resultSet.getDate("CreatedDate"));

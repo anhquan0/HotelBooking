@@ -64,18 +64,6 @@
                      <input type="hidden" name="roomID" value="<%= request.getAttribute("roomID") %>" >
 
                      <div class="row">
-                        <div class="col-md-12 ">
-                           <span>Name</span>
-                           <input class="contactus" placeholder="Name" type="type" name="Name">
-                        </div>
-                        <div class="col-md-12">
-                           <span>Email</span>
-                           <input class="contactus" placeholder="Email" type="type" name="Email">
-                        </div>
-                        <div class="col-md-12">
-                           <span>Phone Number</span>
-                           <input class="contactus" placeholder="Phone Number" type="type" name="PhoneNumber">
-                        </div>
                         <%
                            LocalDateTime checkInDate = (LocalDateTime) request.getAttribute("checkInDate");
                            LocalDateTime checkOutDate = (LocalDateTime) request.getAttribute("checkOutDate");
@@ -113,7 +101,7 @@
                                     <input type="radio" name="payment" value="Cash"> <img src="images/icons8-cash-32.png"/>
                                  </label>
                                  <label class="payment_method">
-                                    <input type="radio" name="payment" value="QR-Code"> <img width="30" height="30" src="https://img.icons8.com/ios-glyphs/60/qr-code--v1.png" alt="qr-code--v1"/>
+                                    <input type="radio" name="payment" value="QR-Code" checked> <img width="30" height="30" src="https://img.icons8.com/ios-glyphs/60/qr-code--v1.png" alt="qr-code--v1"/>
                                  </label>
                              </div>
                         </div>

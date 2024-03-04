@@ -1,13 +1,15 @@
 package model.entity;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class Invoice {
     private int invoiceId;
     private int customerId;
     private int roomId;
-    private Date checkInDate;
-    private Date checkOutDate;
+    private Timestamp checkInDate;
+    private Timestamp checkOutDate;
     private double total;
     private String paymentMethod;
     private String note;
@@ -19,7 +21,7 @@ public class Invoice {
     public Invoice() {
     }
 
-    public Invoice(int invoiceId, int customerId, int roomId, Date checkInDate, Date checkOutDate, double total, String paymentMethod, String note, Date createdDate, String createdBy, Date updatedDate, String updatedBy) {
+    public Invoice(int invoiceId, int customerId, int roomId, Timestamp checkInDate, Timestamp checkOutDate, double total, String paymentMethod, String note, Date createdDate, String createdBy, Date updatedDate, String updatedBy) {
         this.invoiceId = invoiceId;
         this.customerId = customerId;
         this.roomId = roomId;
@@ -34,7 +36,7 @@ public class Invoice {
         this.updatedBy = updatedBy;
     }
 
-    public Invoice(int invoiceId, int customerId, int roomId, Date checkInDate, Date checkOutDate, double total, String paymentMethod, String note) {
+    public Invoice(int invoiceId, int customerId, int roomId, Timestamp checkInDate, Timestamp checkOutDate, double total, String paymentMethod, String note) {
         this.invoiceId = invoiceId;
         this.customerId = customerId;
         this.roomId = roomId;
@@ -77,19 +79,19 @@ public class Invoice {
         this.roomId = roomId;
     }
 
-    public Date getCheckInDate() {
+    public Timestamp getCheckInDate() {
         return checkInDate;
     }
 
-    public void setCheckInDate(Date checkInDate) {
+    public void setCheckInDate(Timestamp checkInDate) {
         this.checkInDate = checkInDate;
     }
 
-    public Date getCheckOutDate() {
+    public Timestamp getCheckOutDate() {
         return checkOutDate;
     }
 
-    public void setCheckOutDate(Date checkOutDate) {
+    public void setCheckOutDate(Timestamp checkOutDate) {
         this.checkOutDate = checkOutDate;
     }
 

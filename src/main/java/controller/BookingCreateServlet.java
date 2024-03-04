@@ -68,16 +68,19 @@ public class BookingCreateServlet extends HttpServlet {
                 String[] serviceIdStrArr = request.getParameterValues("services");
 
                 Integer roomID = Integer.parseInt(request.getParameter("roomID"));
-                String paymentMethod = request.getParameter("payments");
+                String paymentMethod = request.getParameter("payment");
 
                 String note = request.getParameter("note");
 
                 HttpSession session = request.getSession();
                 Customer customer = (Customer) session.getAttribute("customer");
-                invoiceProcessService.createInvoice(checkInTime, checkOutTime, serviceIdStrArr, roomID, paymentMethod, note, customer);
+                if(invoiceProcessService.createInvoice(checkInTime, checkOutTime, serviceIdStrArr, roomID, paymentMethod, note, customer)) {
+                    response.sendRedirect(request.getContextPath() + "/room-list?message=success");
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/room-list?message=error");
+                }
             }
         }
-        response.sendRedirect("/room-list.jsp?statusCode=500");
     }
 
     public void destroy() {

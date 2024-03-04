@@ -2,6 +2,7 @@ package model.dao;
 
 import model.common.Common;
 import model.entity.Customer;
+import model.entity.Invoice;
 import model.entity.Service;
 import util.DBConnect;
 
@@ -23,17 +24,17 @@ public class InvoiceDAO {
         this.connection = DBConnect.getConnection();
     }
 
-    public Integer createInvoice(Customer customer, Integer roomID, String paymentMethod, String note, LocalDateTime checkInTime, LocalDateTime checkOutTime) {
+    public Integer createInvoice(Customer customer, Integer roomID, String paymentMethod, String note, LocalDateTime checkInTime, LocalDateTime checkOutTime) throws SQLException {
         Integer invoiceId = 0;
-        if (connection != null) {
+        if (connection != null && !duplicateCheck(checkInTime, checkOutTime, roomID)) {
             try {
-                String sql = "INSERT INTO Invoice (CustomerID, RoomID, CheckInDate, CheckOutDate, PaymentMethod, Note, CreatedDate, CreatedBy, UpdatedDate, UpdateBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO Invoice (CustomerID, RoomID, CheckInDate, CheckOutDate, PaymentMethod, Note, CreatedDate, CreatedBy, UpdatedDate, UpdatedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 preparedStatement = connection.prepareStatement(sql);
                 Date currentDate = new Date(System.currentTimeMillis());
                 preparedStatement.setInt(1, customer.getCustomerId());
                 preparedStatement.setInt(2, roomID);
-                preparedStatement.setDate(3, Common.convertLocalDateTimeToDate(checkInTime));
-                preparedStatement.setDate(4, Common.convertLocalDateTimeToDate(checkOutTime));
+                preparedStatement.setTimestamp(3, Common.convertLocalDateTimeToDate(checkInTime));
+                preparedStatement.setTimestamp(4, Common.convertLocalDateTimeToDate(checkOutTime));
                 preparedStatement.setString(5, paymentMethod);
                 preparedStatement.setString(6, note);
                 preparedStatement.setDate(7, currentDate);
@@ -41,73 +42,22 @@ public class InvoiceDAO {
                 preparedStatement.setDate(9, currentDate);
                 preparedStatement.setString(10, customer.getName());
                 preparedStatement.executeUpdate();
+                connection.commit();
 
-                rs = preparedStatement.getGeneratedKeys();
+                String getInvoiceIdSQL = "SELECT TOP 1 * FROM Invoice ORDER BY InvoiceID DESC";
+                preparedStatement = connection.prepareStatement(getInvoiceIdSQL);
+                rs = preparedStatement.executeQuery();
                 if(rs.next()) {
                     invoiceId = rs.getInt(1);
                 }
-
+                connection.commit();
             } catch (Exception e) {
                 e.printStackTrace();
-            } finally {
-                Common.closeResources(rs, preparedStatement, connection);
             }
         }
         return invoiceId;
     }
 
-    public List<Service> getAllServices() {
-        List<Service> services = new ArrayList<>();
-        if (connection != null) {
-            try {
-                String sql = "SELECT * FROM Service";
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                while(resultSet.next()) {
-                    Service service = new Service();
-                    service.setServiceId(resultSet.getInt("ServiceID"));
-                    service.setName(resultSet.getString("Name"));
-                    service.setPrice(resultSet.getDouble("Price"));
-                    service.setCreatedDate(resultSet.getDate("CreatedDate"));
-                    service.setCreatedBy(resultSet.getString("CreatedBy"));
-                    service.setUpdatedDate(resultSet.getDate("UpdatedDate"));
-                    service.setUpdatedBy(resultSet.getString("UpdatedBy"));
-                    services.add(service);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return services;
-    }
-
-    public Service getServiceByID(Integer serviceID) {
-        Service service = null;
-
-        if (connection != null) {
-            try {
-                String sql = "SELECT * FROM Service WHERE ServiceID = ?";
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                preparedStatement.setInt(1, serviceID);
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                while(resultSet.next()) {
-                    service.setServiceId(resultSet.getInt("ServiceID"));
-                    service.setName(resultSet.getString("Name"));
-                    service.setPrice(resultSet.getDouble("Price"));
-                    service.setCreatedDate(resultSet.getDate("CreatedDate"));
-                    service.setCreatedBy(resultSet.getString("CreatedBy"));
-                    service.setUpdatedDate(resultSet.getDate("UpdatedDate"));
-                    service.setUpdatedBy(resultSet.getString("UpdatedBy"));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return service;
-    }
 
 
     public boolean updateInvoiceTotal(Integer invoiceID, Double total) {
@@ -119,6 +69,7 @@ public class InvoiceDAO {
 
                 preparedStatement.setDouble(1, total);
                 preparedStatement.setInt(2, invoiceID);
+                preparedStatement.executeUpdate();
                 return true;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -126,4 +77,47 @@ public class InvoiceDAO {
         }
         return false;
     }
+
+    public boolean duplicateCheck(LocalDateTime checkInTime, LocalDateTime checkOutTime, Integer roomID) throws SQLException {
+        if(connection != null) {
+            String duplicateCheckSql = "SELECT COUNT(*) FROM Invoice WHERE RoomID = ? AND ((CheckInDate <= ? AND CheckOutDate >= ?) OR (CheckInDate >= ? AND CheckOutDate <= ?) OR (CheckInDate <= ? AND CheckOutDate >= ?))";
+            PreparedStatement duplicateCheckStatement = connection.prepareStatement(duplicateCheckSql);
+            duplicateCheckStatement.setInt(1, roomID);
+            duplicateCheckStatement.setTimestamp(2, Common.convertLocalDateTimeToDate(checkInTime));
+            duplicateCheckStatement.setTimestamp(3, Common.convertLocalDateTimeToDate(checkInTime));
+            duplicateCheckStatement.setTimestamp(4, Common.convertLocalDateTimeToDate(checkInTime));
+            duplicateCheckStatement.setTimestamp(5, Common.convertLocalDateTimeToDate(checkOutTime));
+            duplicateCheckStatement.setTimestamp(6, Common.convertLocalDateTimeToDate(checkOutTime));
+            duplicateCheckStatement.setTimestamp(7, Common.convertLocalDateTimeToDate(checkOutTime));
+            ResultSet resultSet = duplicateCheckStatement.executeQuery();
+            resultSet.next();
+            int count = resultSet.getInt(1);
+            if(count > 0) return true;
+        }
+        return false;
+    }
+
+    public Invoice getSimpleInvoiceByID(Integer invoiceID) {
+        Invoice invoice = new Invoice();
+        try {
+            String sql = "SELECT * FROM Invoice WHERE InvoiceID = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            Date currentDate = new Date(System.currentTimeMillis());
+
+            preparedStatement.setInt(1, invoiceID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                invoice.setInvoiceId(resultSet.getInt("InvoiceID"));
+                invoice.setRoomId(resultSet.getInt("RoomID"));
+                invoice.setTotal(resultSet.getDouble("Total"));
+                invoice.setCheckInDate(resultSet.getTimestamp("CheckInDate"));
+                invoice.setCheckOutDate(resultSet.getTimestamp("CheckOutDate"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return invoice;
+    }
+
 }

@@ -956,13 +956,14 @@ line-height: 35px;
 
 #error-message {
   position: fixed;
-  top: 10px; /* Thay đổi giá trị tùy thích cho vị trí top */
-  right: 10px; /* Thay đổi giá trị tùy thích cho vị trí right */
+  top: 90px; /* Thay đổi giá trị tùy thích cho vị trí top */
+  right: 40px; /* Thay đổi giá trị tùy thích cho vị trí right */
   background-color: red; /* Màu nền của thông báo */
   color: white; /* Màu chữ của thông báo */
   padding: 10px; /* Khoảng cách padding xung quanh nội dung của thông báo */
   border-radius: 5px; /* Bo tròn các góc của thông báo */
   display: none; /* Ẩn thông báo ban đầu */
+  z-index: 999; /* Khiến tag nổi lên trên đầu */
 }
 
 

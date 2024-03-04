@@ -1,4 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.time.LocalDateTime" %>
+<%@ page import="model.entity.Service" %>
 
 <html lang="en">
    <head>
@@ -57,7 +60,9 @@
          <div class="container">
             <div class="row">
                <div class="col-md-6">
-                  <form id="request" class="main_form">
+                  <form id="request" class="main_form" action="create-booking" method="POST">
+                     <input type="hidden" name="roomID" value="<%= request.getAttribute("roomID") %>" >
+
                      <div class="row">
                         <div class="col-md-12 ">
                            <span>Name</span>
@@ -71,32 +76,50 @@
                            <span>Phone Number</span>
                            <input class="contactus" placeholder="Phone Number" type="type" name="PhoneNumber">
                         </div>
+                        <%
+                           LocalDateTime checkInDate = (LocalDateTime) request.getAttribute("checkInDate");
+                           LocalDateTime checkOutDate = (LocalDateTime) request.getAttribute("checkOutDate");
+                        %>
                         <div class="col-md-12">
                              <span>Check-in Time</span>
-                             <input class="contactus" placeholder="dd/mm/yyyy" type="date" name="dd/mm/yyyy">
+                             <input class="contactus" type="datetime-local" name="check_in_time" value="<%= checkInDate %>">
                         </div>
                         <div class="col-md-12">
-                             <span>Check-out Plan Time</span>
-                             <input class="contactus" placeholder="dd/mm/yyyy" type="date" name="dd/mm/yyyy">
+                             <span>Check-out Time</span>
+                             <input class="contactus" type="datetime-local" name="check_out_time" value="<%= checkOutDate %>">
                         </div>
                         <div class="col-md-12">
                              <span>Service</span>
+                             <select class="contactus" name="services" id="service" multiple>
+                                 <% 
+                                    List<Service> serviceList = (List<Service>) request.getAttribute("serviceList");
+                                    for(int i = 0; i < serviceList.size(); i++) {
+                                       Service service = serviceList.get(i);
+                                 %>
+                                    <option value="<%= service.getServiceId() %>"><%= service.getName() %> (<%= service.getPrice() %>$)</option>
+                                 <%      
+                                    }
+                                 %>
+                             </select>
                         </div>
+                        <div class="col-md-12">
+                           <span>Note</span>
+                           <textarea name="note" class="contactus"></textarea>
+                      </div>
                         <div class="col-md-12">
                              <span>Payment Method</span>
                              <div>
                                  <label class="payment_method">
-                                    <input type="radio" name="payment" value="cash"> <img src="images/icons8-cash-32.png"/>
+                                    <input type="radio" name="payment" value="Cash"> <img src="images/icons8-cash-32.png"/>
                                  </label>
                                  <label class="payment_method">
-                                    <input type="radio" name="payment" value="paypal"> <img src="images/icons8-paypal-32.png"/>
+                                    <input type="radio" name="payment" value="QR-Code"> <img width="30" height="30" src="https://img.icons8.com/ios-glyphs/60/qr-code--v1.png" alt="qr-code--v1"/>
                                  </label>
                              </div>
                         </div>
                         <div class="col-md-12">
-                           <button class="send_btn">Send</button>
+                           <button class="send_btn">Submit</button>
                         </div>
-
                      </div>
                   </form>
                </div>

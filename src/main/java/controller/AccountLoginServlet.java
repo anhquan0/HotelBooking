@@ -4,7 +4,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.dao.AccountDAO;
+import model.dao.CustomerDAO;
 import model.entity.Account;
+import model.entity.Customer;
 
 import java.io.IOException;
 
@@ -12,6 +14,7 @@ import java.io.IOException;
 public class AccountLoginServlet extends HttpServlet {
 
     AccountDAO accountDAO = new AccountDAO();
+    CustomerDAO customerDAO = new CustomerDAO();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Cookie arr[] = request.getCookies();
@@ -39,6 +42,10 @@ public class AccountLoginServlet extends HttpServlet {
         Account account = accountDAO.login(username, password);
         if (account != null) {
             HttpSession session = request.getSession();
+            Customer customer = customerDAO.findByAccountId(account.getAccountId());
+            if(customer != null) {
+                session.setAttribute("customer", customer);
+            }
             session.setAttribute("loggedInUser", account);
 
             if (rememberMe) {

@@ -55,11 +55,11 @@
             </div>
          </div>
       </div>
-      <div class="row">
-         <a href=""></a>
-      </div>
+
       <!-- our_room -->
       <div  class="our_room">
+         <div id="error-message"></div>
+
          <div class="container">
             <div class="row">
                <div class="col-md-12">
@@ -119,7 +119,7 @@
                         <p class="room_price">$<%=room.getPrice()%>/day</p>
                         <p class="bed_room"><%=room.getDescription()%></p>
                         <% if(room.getStatus().equals("Available")) { %>
-                        <a href="booking.jsp?roomID=<%=room.getRoomId()%>" id="room_<%=room.getRoomId()%>" class="book_btn" onclick="return bookRoom('<%= room.getRoomId() %>')">Book now</a>
+                        <a href="create-booking?roomID=<%=room.getRoomId()%>" id="room_<%=room.getRoomId()%>" class="book_btn" onclick="return bookRoom('<%= room.getRoomId() %>')">Book now</a>
                         <% } %>
                      </div>
                   </div>
@@ -242,85 +242,81 @@
       background-color: red;
    }
 </style>
+
 <script>
-   var checkInDate = document.getElementById("check_in_date");
-   var checkOutDate = document.getElementById("check_out_date");
-   var errorMessage = document.querySelector("#error-message");
-   var bookButton = document.getElementById("book_button");
-   var bookRoomForm = document.getElementById("book_room_form");
- 
-   function isDateValid(dateStr) {
-     return !isNaN(new Date(dateStr));
+   function filterRooms() {
+      // Get selected values
+      var priceFilter = document.getElementById('priceFilter').value;
+      var statusFilter = document.getElementById('statusFilter').value;
+      var typeFilter = document.getElementById('typeFilter').value;
+
+      // Build the URL with the selected values
+      var url = 'room-list?priceFilter=' + priceFilter + '&statusFilter=' + statusFilter + '&typeFilter=' + typeFilter;
+
+      // Redirect to the new URL
+      window.location.href = url;
    }
- 
-   function validateDateInHome() {
-     console.log(!isDateValid(checkInDate) || !isDateValid(checkOutDate))
- 
-     var flag = true;
-     if(!isDateValid(checkInDate) || !isDateValid(checkOutDate)) {
-       errorMessage.textContent = "Invalid date"
-       flag = false;
-     } else {
-       console.log(!isDateValid(checkInDate) || !isDateValid(checkOutDate))
-       var selectedCheckInDate = new Date(checkInDate);
-       var selectedCheckOutDate = new Date(checkOutDate);
-       var currentDate = new Date();
-       if(!(selectedCheckInDate > currentDate && selectedCheckOutDate > selectedCheckInDate)) {
-         errorMessage.textContent = "The check-in date and check-out date must be greater than or equal to the current date"
-         flag = false;
-       }
-     }
- 
-     if(!flag) {
-       errorMessage.style.display = "block"; // Hiển thị thông báo nếu ngày nhỏ hơn ngày hiện tại
-       setTimeout(function() {
-         errorMessage.style.display = "none"; // Ẩn thông báo sau 3 giây
-       }, 3000);
-     } else {
-       errorMessage.style.display = "none"
-     }
- 
-     return flag;
+
+   function resetFilter() {
+      // Redirect to the original page without any filters
+      window.location.href = 'room-list';
    }
- </script>
- 
 
-   <script>
-      function filterRooms() {
-         // Get selected values
-         var priceFilter = document.getElementById('priceFilter').value;
-         var statusFilter = document.getElementById('statusFilter').value;
-         var typeFilter = document.getElementById('typeFilter').value;
+   // Set the selected option of the dropdowns based on the URL parameters
+   window.onload = function() {
+      var urlParams = new URLSearchParams(window.location.search);
+      document.getElementById('priceFilter').value = urlParams.get('priceFilter') || 'all';
+      document.getElementById('statusFilter').value = urlParams.get('statusFilter') || 'all';
+      document.getElementById('typeFilter').value = urlParams.get('typeFilter') || 'all';
+   }
 
-         // Build the URL with the selected values
-         var url = 'room-list?priceFilter=' + priceFilter + '&statusFilter=' + statusFilter + '&typeFilter=' + typeFilter;
-
-         // Redirect to the new URL
-         window.location.href = url;
-      }
-
-      function resetFilter() {
-         // Redirect to the original page without any filters
-         window.location.href = 'room-list';
-      }
-
-      // Set the selected option of the dropdowns based on the URL parameters
-      window.onload = function() {
-         var urlParams = new URLSearchParams(window.location.search);
-         document.getElementById('priceFilter').value = urlParams.get('priceFilter') || 'all';
-         document.getElementById('statusFilter').value = urlParams.get('statusFilter') || 'all';
-         document.getElementById('typeFilter').value = urlParams.get('typeFilter') || 'all';
-      }
-
-      function bookRoom(str) {
+   function bookRoom(str) {
+      var flag = validateDateInRoomList()
+      if (flag) {
          var checkInDate = document.getElementById("check_in_date").value;
          var checkOutDate = document.getElementById("check_out_date").value;
          var url = document.querySelector("a#room_" + str);
          var newUrl = url.getAttribute('href') + "&check_in_date=" + checkInDate + "&check_out_date=" + checkOutDate;
-         console.log(newUrl)
-         window.location.href = newUrl;
-         return false;
+         url.setAttribute('href', newUrl)
+         window.location.href = url.getAttribute('href');
       }
-   </script>
+      return flag;
+   }
+
+   var checkInDate = document.getElementById("check_in_date");
+   var checkOutDate = document.getElementById("check_out_date");
+   var errorMessage = document.querySelector("#error-message");
+
+   function isDateValid(dateStr) {
+      return !isNaN(new Date(dateStr));
+   }
+
+   function validateDateInRoomList() {
+      var flag = true;
+      if (!(isDateValid(checkInDate.value) && isDateValid(checkOutDate.value))) {
+         errorMessage.textContent = "Invalid date"
+         flag = false;
+      } else {
+         var selectedCheckInDate = new Date(checkInDate.value);
+         var selectedCheckOutDate = new Date(checkOutDate.value);
+         var currentDate = new Date();
+         if (!(selectedCheckInDate >= currentDate && selectedCheckOutDate > selectedCheckInDate)) {
+            errorMessage.textContent = "The check-in date must be greater than or equal to the current date, check-out date must be greater than check-in date"
+            flag = false;
+         }
+      }
+
+      if (!flag) {
+         errorMessage.style.display = "block"; // Hiển thị thông báo nếu ngày nhỏ hơn ngày hiện tại
+         setTimeout(function () {
+            errorMessage.style.display = "none"; // Ẩn thông báo sau 3 giây
+         }, 3000);
+      } else {
+         errorMessage.style.display = "none"
+      }
+
+      return flag;
+   }
+</script>
 
 </html>

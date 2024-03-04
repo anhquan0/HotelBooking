@@ -10,7 +10,6 @@ public class Invoice {
     private Date checkOutDate;
     private double total;
     private String paymentMethod;
-
     private String note;
     private Date createdDate;
     private String createdBy;

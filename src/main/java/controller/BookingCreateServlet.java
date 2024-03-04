@@ -42,11 +42,6 @@ public class BookingCreateServlet extends HttpServlet {
         request.setAttribute("serviceList", services);
         request.setAttribute("roomID", roomID);
 
-        HttpSession session = request.getSession();
-        Account account = (Account) session.getAttribute("loggedInUser");
-
-        Customer customer = customerDAO.findByAccountId(account.getAccountId());
-
         if (checkInDateStr != null && checkOutDateStr != null) {
             if(!checkInDateStr.isEmpty() && !checkOutDateStr.isEmpty()) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
